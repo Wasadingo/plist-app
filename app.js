@@ -56,7 +56,7 @@ function render() {
   root.innerHTML = views[state.view]();
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
   document.getElementById('breadcrumb-root').textContent = viewNames[state.view];
-  document.getElementById('breadcrumb-current').textContent = state.view === 'home' ? `Buenos días, ${userName().split(/\s+/)[0]}` : viewNames[state.view];
+  document.getElementById('breadcrumb-current').textContent = state.view === 'home' ? `Bienvenido, ${userName().split(/\s+/)[0]}` : viewNames[state.view];
   document.getElementById('mode-label').textContent = state.mode === 'admin' ? 'Perfil administrador' : 'Perfil normal';
   const topName = document.querySelector('.profile-chip strong');
   const topAvatar = document.querySelector('.profile-chip .avatar');
