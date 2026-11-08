@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#12304a" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>PList | Listas y Recetas frescas</title>
+    <link rel="icon" href="assets/PList_logo_fondo_claro.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegación principal">
+        <div class="brand-lockup">
+          <img src="assets/PList_logo_fondo_claro.png" alt="PList" class="brand-logo" />
+          <span>Listas y Recetas frescas</span>
+        </div>
+        <button class="mobile-close" aria-label="Cerrar menú">×</button>
+        <nav class="main-nav">
+          <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span>Inicio</button>
+          <button class="nav-item" data-view="lists"><span class="nav-icon">✓</span>Mis listas de compra</button>
+          <button class="nav-item" data-view="my-recipes"><span class="nav-icon">◈</span>Mis recetas</button>
+          <button class="nav-item" data-view="recipes"><span class="nav-icon">✦</span>Recetas</button>
+          <button class="nav-item" data-view="profile"><span class="nav-icon">◎</span>Perfil y configuración</button>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="offline-status"><span class="status-dot"></span><span>Guardado local activo</span></div>
+          <button class="text-button" data-action="show-legal">Privacidad y ayuda</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="menu-toggle" aria-label="Abrir menú">☰</button>
+          <div class="breadcrumb"><span id="breadcrumb-root">Inicio</span><span class="breadcrumb-separator">/</span><strong id="breadcrumb-current">Buenos días, Alex</strong></div>
+          <div class="topbar-actions">
+            <button class="icon-button notification-button" data-view="profile" aria-label="Notificaciones">♧<span class="notification-badge">3</span></button>
+            <button class="profile-chip" data-view="profile"><span class="avatar">AL</span><span class="profile-chip-copy"><strong>Alex López</strong><small id="mode-label">Perfil normal</small></span><span>⌄</span></button>
+          </div>
+        </header>
+        <div id="view-root" class="view-root" aria-live="polite"></div>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <div id="modal-root"></div>
+    <script src="db.js"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="app.js"></script>
+    <script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js');</script>
+  </body>
+</html>

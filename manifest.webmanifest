@@ -1,0 +1,13 @@
+{
+  "name": "PList — Listas y Recetas frescas",
+  "short_name": "PList",
+  "lang": "es",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f5",
+  "theme_color": "#12304a",
+  "description": "Organiza tus listas de compra y descubre recetas frescas.",
+  "icons": [
+    { "src": "assets/PList_logo_transparente.png", "sizes": "1200x400", "type": "image/png", "purpose": "any" }
+  ]
+}
