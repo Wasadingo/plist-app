@@ -16,7 +16,7 @@ Si se borran los datos del navegador, también se borran los datos locales de PL
 
 ## Backend preparado
 
-El backend se está preparando con Supabase para evitar depender de Google en el registro. La estructura inicial está en `supabase/schema.sql` y define Auth por email y contraseña, PostgreSQL, listas, recetas, colaboración, favoritos, reportes, seguridad administrativa y auditoría. `supabase-client.js` activa la conexión solo cuando existe un archivo local `supabase-config.js`.
+El backend se está preparando con Supabase para evitar depender de Google en el registro. La estructura inicial está en `supabase/schema.sql` y define Auth por email y contraseña, PostgreSQL, listas, recetas, colaboración, favoritos, reportes, seguridad administrativa y auditoría. `supabase-client.js` activa la conexión con la configuración pública del proyecto.
 
 ## Estado de la implementación
 
