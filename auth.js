@@ -51,4 +51,5 @@
     if (!data.session) renderAuth();
   }
   window.addEventListener('plist-backend-ready', showWhenReady);
+  setTimeout(showWhenReady, 0);
 })();
