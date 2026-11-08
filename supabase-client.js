@@ -11,7 +11,7 @@ window.PListBackend = { enabled: false, client: null };
     window.PListBackend = {
       enabled: true,
       client,
-      signUp: (email, password, profile) => client.auth.signUp({ email, password, options: { data: profile } }),
+      signUp: (email, password, profile) => client.auth.signUp({ email, password, options: { data: profile, emailRedirectTo: `${location.origin}${location.pathname}` } }),
       signIn: (email, password) => client.auth.signInWithPassword({ email, password }),
       signOut: () => client.auth.signOut(),
       session: () => client.auth.getSession(),
