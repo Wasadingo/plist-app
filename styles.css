@@ -36,7 +36,7 @@ button { cursor: pointer; }
 .status-dot { width: 7px; height: 7px; background: #69c890; border-radius: 50%; box-shadow: 0 0 0 4px rgba(105, 200, 144, .12); }
 .text-button { border: 0; background: none; padding: 0; color: #a9c0c6; text-align: left; font-size: 12px; }
 .main-content { min-width: 0; flex: 1; }
-.topbar { min-height: 86px; padding: 20px clamp(20px, 5vw, 68px); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.7); border-bottom: 1px solid var(--line); }
+.topbar { min-height: 86px; padding: 20px clamp(20px, 5vw, 68px); padding-top: max(20px, env(safe-area-inset-top)); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.7); border-bottom: 1px solid var(--line); }
 .breadcrumb { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
 .breadcrumb strong { color: var(--ink); font-size: 15px; }
 .breadcrumb-separator { color: #b6c1bd; }
@@ -61,7 +61,7 @@ button { cursor: pointer; }
 .notification-menu.open { display: block; }
 .notification-empty { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .menu-toggle, .mobile-close { display: none; }
-.view-root { max-width: 1280px; margin: 0 auto; padding: clamp(26px, 5vw, 64px); }
+.view-root { width: 100%; max-width: 1280px; margin: 0 auto; padding: clamp(26px, 5vw, 64px); }
 .eyebrow { color: var(--green); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .13em; margin: 0 0 10px; }
 h1, h2, h3, p { margin-top: 0; }
 h1 { color: var(--navy); font-size: clamp(29px, 4vw, 46px); line-height: 1.08; letter-spacing: -.04em; margin-bottom: 14px; }
@@ -173,4 +173,5 @@ h3 { color: var(--navy); font-size: 17px; }
 .auth-link { color: var(--muted); margin-top: 12px; }
 @media (max-width: 680px) { .auth-card { padding: 28px 20px; } }
 @media (max-width: 920px) { .sidebar { width: 220px; flex-basis: 220px; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .dashboard-grid, .list-detail, .profile-layout { grid-template-columns: 1fr; } .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 680px) { .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; transform: translateX(-100%); transition: transform .25s; width: min(290px, 84vw); } .sidebar.open { transform: translateX(0); } .mobile-close { display: block; position: absolute; top: 20px; right: 15px; border: 0; background: transparent; color: white; font-size: 26px; } .menu-toggle { display: block; font-size: 22px; margin-right: 15px; } .topbar { padding: 16px 20px; } .breadcrumb-root, .breadcrumb-separator { display: none; } .breadcrumb { flex: 1; } .profile-chip-copy { display: none; } .view-root { padding: 28px 18px 40px; } .hero, .section-title { display: block; } .hero-actions { margin-top: 20px; } .stats-grid, .cards-grid { grid-template-columns: 1fr; } .stat-card { padding: 16px; } .recipe-image { height: 140px; } }
+@media (max-width: 680px) { .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; transform: translateX(-100%); transition: transform .25s; width: min(290px, 84vw); padding-bottom: max(20px, env(safe-area-inset-bottom)); } .sidebar.open { transform: translateX(0); } .mobile-close { display: block; position: absolute; top: max(20px, env(safe-area-inset-top)); right: 15px; border: 0; background: transparent; color: white; font-size: 26px; } .menu-toggle { display: block; font-size: 22px; margin-right: 15px; } .topbar { padding: 16px 20px; } .breadcrumb-root, .breadcrumb-separator { display: none; } .breadcrumb { flex: 1; min-width: 0; } .breadcrumb strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .profile-chip-copy { display: none; } .view-root { padding: 28px 18px 40px; padding-bottom: max(40px, env(safe-area-inset-bottom)); } .hero, .section-title { display: block; } .hero-actions { margin-top: 20px; } .stats-grid, .cards-grid { grid-template-columns: 1fr; } .stat-card { padding: 16px; } .recipe-image { height: 140px; } .profile-menu { right: -6px; } .notification-menu { right: -55px; } }
+@media (max-width: 390px) { .topbar { padding-left: 14px; padding-right: 14px; } .topbar-actions { gap: 5px; } .icon-button { padding: 5px; } .profile-chip { gap: 5px; } .avatar { width: 32px; height: 32px; } }

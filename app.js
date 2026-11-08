@@ -23,6 +23,9 @@ const viewNames = { home: 'Inicio', lists: 'Mis listas de compra', 'my-recipes':
 const root = document.getElementById('view-root');
 const toast = document.getElementById('toast');
 let ready = false;
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt = event; document.querySelector('.install-button')?.removeAttribute('hidden'); });
+window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; document.querySelector('.install-button')?.setAttribute('hidden', ''); showToast('PList se ha instalado correctamente'); });
 function userName() { return state.user?.displayName || 'PList'; }
 function userInitials() { return userName().split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'PL'; }
 function persist() {
@@ -62,12 +65,14 @@ function render() {
   const topAvatar = document.querySelector('.profile-chip .avatar');
   const profileMenuWrap = document.querySelector('.profile-menu-wrap');
   const notificationMenuWrap = document.querySelector('.notification-menu-wrap');
+  const installButton = document.querySelector('.install-button');
   const notificationButton = document.querySelector('.notification-button');
   const notificationBadge = document.querySelector('.notification-badge');
   if (topName) topName.textContent = userName();
   if (topAvatar) topAvatar.textContent = userInitials();
   profileMenuWrap?.removeAttribute('hidden');
   notificationMenuWrap?.removeAttribute('hidden');
+  if (deferredInstallPrompt) installButton?.removeAttribute('hidden');
   notificationButton?.removeAttribute('hidden');
   const notificationCount = state.notifications.length;
   if (notificationBadge) {
@@ -100,6 +105,7 @@ function bindEvents() {
   document.querySelector('.mobile-close')?.addEventListener('click', () => document.querySelector('.sidebar').classList.remove('open'));
 }
 function handleAction(action, el) {
+  if (action === 'install-app') { if (!deferredInstallPrompt) return showToast('En iPhone o iPad, usa Compartir y después «Añadir a pantalla de inicio».'); deferredInstallPrompt.prompt(); deferredInstallPrompt.userChoice.finally(() => { deferredInstallPrompt = null; el.setAttribute('hidden', ''); }); return; }
   if (action === 'toggle-profile-menu') { const menu = document.querySelector('.profile-menu'); const button = document.querySelector('.profile-chip'); const notifications = document.querySelector('.notification-menu'); const isOpen = menu?.classList.contains('open'); notifications?.classList.remove('open'); if (menu) menu.classList.toggle('open', !isOpen); button?.setAttribute('aria-expanded', String(!isOpen)); return; }
   if (action === 'toggle-notifications') { const menu = document.querySelector('.notification-menu'); const profile = document.querySelector('.profile-menu'); const button = document.querySelector('.notification-button'); const isOpen = menu?.classList.contains('open'); profile?.classList.remove('open'); if (menu) menu.classList.toggle('open', !isOpen); button?.setAttribute('aria-expanded', String(!isOpen)); return; }
   if (action === 'sign-out') { const menu = document.querySelector('.profile-menu'); if (menu) menu.hidden = true; PListBackend.signOut().finally(() => { location.reload(); }); return; }

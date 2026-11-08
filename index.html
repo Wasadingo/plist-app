@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#12304a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PList" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="assets/PList_logo_transparente.png" />
     <title>PList | Listas y Recetas frescas</title>
     <link rel="icon" href="assets/PList_logo_fondo_claro.png" />
     <link rel="stylesheet" href="styles.css" />
@@ -27,6 +32,7 @@
         <div class="sidebar-footer">
           <div class="offline-status"><span class="status-dot"></span><span>Guardado local activo</span></div>
           <button class="text-button" data-action="show-legal">Privacidad y ayuda</button>
+          <button class="text-button install-button" data-action="install-app" hidden>Instalar PList</button>
         </div>
       </aside>
 
