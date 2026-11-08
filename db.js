@@ -12,18 +12,18 @@ window.PListDB = (() => {
       request.onerror = () => reject(request.error);
     });
   }
-  async function load() {
+  async function load(key = KEY) {
     const db = await open();
     return new Promise((resolve, reject) => {
-      const request = db.transaction(STORE, 'readonly').objectStore(STORE).get(KEY);
+      const request = db.transaction(STORE, 'readonly').objectStore(STORE).get(key);
       request.onsuccess = () => resolve(request.result || null);
       request.onerror = () => reject(request.error);
     });
   }
-  async function save(value) {
+  async function save(value, key = KEY) {
     const db = await open();
     return new Promise((resolve, reject) => {
-      const request = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, KEY);
+      const request = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, key);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
