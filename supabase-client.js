@@ -14,6 +14,7 @@ window.PListBackend = { enabled: false, client: null };
       signUp: (email, password, profile) => client.auth.signUp({ email, password, options: { data: profile, emailRedirectTo: `${location.origin}${location.pathname}` } }),
       signIn: (email, password) => client.auth.signInWithPassword({ email, password }),
       signOut: () => client.auth.signOut(),
+      resendSignup: (email) => client.auth.resend({ type: 'signup', email, options: { emailRedirectTo: `${location.origin}${location.pathname}` } }),
       session: () => client.auth.getSession(),
       onAuthChange: (callback) => client.auth.onAuthStateChange(callback),
       listLists: () => client.from('shopping_lists').select('*, shopping_items(*)').order('updated_at', { ascending: false }),

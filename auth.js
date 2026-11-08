@@ -24,7 +24,14 @@
       const profile = { display_name: document.getElementById('auth-name').value.trim(), nickname: document.getElementById('auth-nickname').value.trim() };
       const result = await PListBackend.signUp(email, password, profile);
       if (result.error) return renderAuth(result.error.message);
-      return renderAuth('Cuenta creada. Revisa tu correo para confirmar la dirección antes de entrar.');
+      renderAuth('Cuenta creada. Revisa tu correo para confirmar la dirección antes de entrar.');
+      const message = document.querySelector('.auth-message');
+      message.insertAdjacentHTML('beforeend', '<br><button class="auth-inline-link" id="auth-resend">Reenviar correo de confirmación</button>');
+      document.getElementById('auth-resend').addEventListener('click', async () => {
+        const resend = await PListBackend.resendSignup(email);
+        message.textContent = resend.error ? 'No se pudo reenviar el correo. Revisa la configuración SMTP.' : 'Solicitud enviada. Revisa también la carpeta de spam.';
+      });
+      return;
     }
     const result = await PListBackend.signIn(email, password);
     if (result.error) return renderAuth('No se pudo iniciar sesión. Comprueba el email y la contraseña.');
