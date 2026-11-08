@@ -34,6 +34,8 @@ Alternativas: otro proveedor SMTP gratuito compatible o el servidor integrado de
 - Netlify Free: opción sencilla para publicar la carpeta del proyecto.
 - Vercel Hobby: opción sencilla si después migramos a un framework.
 
+Para GitHub Pages, el repositorio ya incluye un workflow en `.github/workflows/deploy-pages.yml`. En GitHub abre `Settings > Pages`, selecciona `GitHub Actions` como fuente y ejecuta el workflow si no se inicia automáticamente.
+
 El frontend solo necesita la URL de Supabase y la clave pública. La clave secreta nunca debe aparecer en la web.
 
 La clave pública puede estar en el frontend. Nunca se debe incluir la `service_role` key en el navegador ni en el repositorio.
