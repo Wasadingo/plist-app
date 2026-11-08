@@ -1,7 +1,8 @@
 const state = {
   view: 'home',
   mode: 'normal',
-  user: { displayName: 'Alex López', nickname: 'alexcocina' },
+  user: null,
+  notifications: [],
   listsTab: 'personal',
   selectedList: 0,
   lists: [
@@ -28,6 +29,7 @@ function persist() {
 }
 
 function render() {
+  document.querySelector('.app-shell')?.classList.remove('auth-mode');
   root.innerHTML = views[state.view]();
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
   document.getElementById('breadcrumb-root').textContent = viewNames[state.view];
@@ -35,14 +37,24 @@ function render() {
   document.getElementById('mode-label').textContent = state.mode === 'admin' ? 'Perfil administrador' : 'Perfil normal';
   const topName = document.querySelector('.profile-chip strong');
   const topAvatar = document.querySelector('.profile-chip .avatar');
+  const profileChip = document.querySelector('.profile-chip');
+  const notificationButton = document.querySelector('.notification-button');
+  const notificationBadge = document.querySelector('.notification-badge');
   if (topName) topName.textContent = userName();
   if (topAvatar) topAvatar.textContent = userInitials();
+  profileChip?.removeAttribute('hidden');
+  notificationButton?.removeAttribute('hidden');
+  const notificationCount = state.notifications.length;
+  if (notificationBadge) {
+    notificationBadge.textContent = notificationCount;
+    notificationBadge.hidden = notificationCount === 0;
+  }
   bindEvents();
 }
 
 const views = {
   home: () => `<section class="hero"><div><p class="eyebrow">Martes, 8 de noviembre</p><h1>Todo lo que necesitas<br>para comer mejor.</h1><p class="lead">Organiza tu compra, guarda tus recetas favoritas y comparte ideas frescas con tu comunidad.</p></div><div class="hero-actions"><button class="button button-primary" data-action="new-list">+ Nueva lista</button><button class="button button-light" data-view="recipes">Explorar recetas</button></div></section>
-    <div class="stats-grid"><div class="stat-card"><span class="stat-label">Listas activas</span><span class="stat-value">${state.lists.length}</span><span class="stat-foot">↑ 2 esta semana</span></div><div class="stat-card"><span class="stat-label">Productos pendientes</span><span class="stat-value">${pendingItems()}</span><span class="stat-foot">Tu compra está al día</span></div><div class="stat-card"><span class="stat-label">Recetas guardadas</span><span class="stat-value">${state.recipes.filter(r => r.favorite).length}</span><span class="stat-foot">Nuevas ideas para ti</span></div><div class="stat-card"><span class="stat-label">Racha de cocina</span><span class="stat-value">6 días</span><span class="stat-foot">¡Sigue así, Alex!</span></div></div>
+    <div class="stats-grid"><div class="stat-card"><span class="stat-label">Listas activas</span><span class="stat-value">${state.lists.length}</span><span class="stat-foot">Tus listas actuales</span></div><div class="stat-card"><span class="stat-label">Productos pendientes</span><span class="stat-value">${pendingItems()}</span><span class="stat-foot">Tu compra está al día</span></div><div class="stat-card"><span class="stat-label">Recetas guardadas</span><span class="stat-value">${state.recipes.filter(r => r.favorite).length}</span><span class="stat-foot">Tus recetas favoritas</span></div><div class="stat-card"><span class="stat-label">Notificaciones</span><span class="stat-value">${state.notifications.length}</span><span class="stat-foot">Avisos pendientes</span></div></div>
     <div class="dashboard-grid"><section class="panel"><div class="panel-header"><h2>Actividad reciente</h2><button class="button button-quiet" data-view="lists">Ver listas</button></div><div class="activity-list"><div class="activity-row"><div class="activity-dot">✓</div><div class="activity-copy"><strong>Compra semanal</strong> está al 25% completada<small>Actualizada hace 12 minutos</small></div></div><div class="activity-row"><div class="activity-dot">✦</div><div class="activity-copy"><strong>Bowl mediterráneo</strong> se ha guardado en favoritos<small>Hace 1 hora</small></div></div><div class="activity-row"><div class="activity-dot">♧</div><div class="activity-copy"><strong>Lucía te ha invitado</strong> a la lista Casa de la playa<small>Ayer, 18:30</small></div></div></div></section><section class="panel"><div class="panel-header"><h2>Tu progreso</h2><span class="eyebrow" style="margin:0">Esta semana</span></div><div class="progress-wrap"><div class="progress-meta"><span>Productos comprados</span><strong>8 de 12</strong></div><div class="progress-track"><div class="progress-bar" style="width:66%"></div></div><p class="lead" style="font-size:12px;margin:4px 0 0">Un pequeño paso cada día hace más fácil comer bien.</p><button class="button button-dark" data-view="lists">Continuar compra</button></div></section></div>`,
   lists: () => { const visible = state.lists.filter(l => l.type === state.listsTab); return `<div class="section-title"><div><p class="eyebrow">Organización</p><h2>Mis listas de compra</h2><p>Planifica tu compra sin perder de vista lo importante.</p></div><button class="button button-primary" data-action="new-list">+ Nueva lista</button></div><div class="tabs"><button class="tab ${state.listsTab === 'personal' ? 'active' : ''}" data-tab="personal">Listas personales</button><button class="tab ${state.listsTab === 'shared' ? 'active' : ''}" data-tab="shared">Listas compartidas</button></div><div class="cards-grid">${visible.map((list, i) => `<article class="list-card"><div class="list-card-top"><div><h3>${list.name}</h3><p>${list.type === 'shared' ? `Compartida con ${list.members} personas` : 'Solo tú'}</p></div><button class="kebab" data-action="list-menu" data-index="${state.lists.indexOf(list)}">···</button></div><div class="list-meta"><span><strong>${list.items.length}</strong> productos</span><span><strong>${list.items.filter(i => !i.done).length}</strong> pendientes</span></div><div class="card-actions"><span class="eyebrow" style="margin:0">${list.updated}</span><button class="button button-light" data-action="open-list" data-index="${state.lists.indexOf(list)}">Abrir lista</button></div></article>`).join('') || `<div class="panel empty-state"><div class="empty-state-icon">🧺</div><h3>Aún no tienes listas aquí</h3><p>Crea una lista para empezar a organizar tu compra.</p></div>`}</div>`; },
   'my-recipes': () => `<div class="section-title"><div><p class="eyebrow">Tu cocina</p><h2>Mis recetas</h2><p>Crea tus propias recetas y guarda tus ideas para otro día.</p></div><button class="button button-primary" data-action="new-recipe">+ Nueva receta</button></div><div class="cards-grid">${state.recipes.slice(0,2).map(recipeCard).join('')}<div class="panel empty-state"><div class="empty-state-icon">✎</div><h3>¿Tienes una idea?</h3><p>Guarda una receta para volver a ella cuando quieras.</p><button class="button button-light" data-action="new-recipe">Crear receta</button></div></div>`,
@@ -93,6 +105,7 @@ async function start() {
         const profileResult = await PListBackend.client.from('profiles').select('display_name,nickname').eq('id', session.user.id).maybeSingle();
         const profile = profileResult.data;
         state.user = { displayName: profile?.display_name || session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'PList', nickname: profile?.nickname || session.user.user_metadata?.nickname || 'usuario' };
+        state.notifications = [];
         state.lists = [];
         state.recipes = [];
       } else {

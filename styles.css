@@ -22,6 +22,8 @@ body { margin: 0; background: var(--cream); }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 .app-shell { display: flex; min-height: 100vh; }
+.app-shell.auth-mode .sidebar, .app-shell.auth-mode .topbar { display: none; }
+.app-shell.auth-mode .main-content { width: 100%; }
 .sidebar { width: 258px; flex: 0 0 258px; background: var(--navy); color: #e9f2f0; padding: 28px 18px 20px; display: flex; flex-direction: column; }
 .brand-lockup { padding: 0 12px 36px; display: grid; gap: 10px; color: #b7d5ce; font-size: 11px; letter-spacing: .04em; }
 .brand-logo { width: 125px; height: auto; object-fit: contain; object-position: left; }
@@ -41,6 +43,7 @@ button { cursor: pointer; }
 .topbar-actions { display: flex; align-items: center; gap: 14px; }
 .icon-button, .profile-chip, .menu-toggle { border: 0; background: transparent; color: var(--navy); }
 .icon-button { position: relative; font-size: 22px; padding: 7px; }
+.notification-icon { width: 23px; height: 23px; display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .notification-badge { position: absolute; right: 1px; top: 1px; min-width: 16px; height: 16px; padding: 1px 4px; background: var(--red); color: #fff; border-radius: 20px; font-size: 9px; font-weight: 700; }
 .profile-chip { display: flex; gap: 9px; align-items: center; text-align: left; }
 .avatar { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; background: #e8c08e; color: #6e4c2b; font-weight: 700; font-size: 12px; }
