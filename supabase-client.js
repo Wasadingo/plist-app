@@ -20,6 +20,7 @@ window.PListBackend = { enabled: false, client: null };
       createList: (payload) => client.from('shopping_lists').insert(payload).select().single(),
     };
     document.documentElement.dataset.backend = 'supabase';
+    window.dispatchEvent(new CustomEvent('plist-backend-ready'));
   } catch (error) {
     console.warn('Backend remoto no disponible; continúa el modo local.', error);
   }

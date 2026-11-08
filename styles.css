@@ -146,5 +146,15 @@ h3 { color: var(--navy); font-size: 17px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .toast { position: fixed; bottom: 22px; right: 22px; padding: 13px 16px; background: var(--navy); color: #fff; border-radius: 11px; font-size: 12px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: .25s; z-index: 20; }
 .toast.show { opacity: 1; transform: translateY(0); }
+.auth-shell { min-height: calc(100vh - 86px); display: grid; place-items: center; padding: 30px 0; }
+.auth-card { width: min(470px, 100%); padding: 38px; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+.auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 34px; color: var(--green); font-weight: 700; font-size: 12px; }
+.auth-brand img { width: 115px; height: auto; }
+.auth-card h1 { font-size: 32px; margin-bottom: 10px; }
+.auth-card .lead { font-size: 13px; margin-bottom: 25px; }
+.auth-message { background: #fff5df; border: 1px solid #f1d28d; color: #7a5723; border-radius: 10px; padding: 11px 13px; font-size: 12px; margin-bottom: 17px; line-height: 1.45; }
+.auth-switch, .auth-link { display: block; border: 0; background: transparent; color: var(--green); font-size: 12px; margin: 18px auto 0; }
+.auth-link { color: var(--muted); margin-top: 12px; }
+@media (max-width: 680px) { .auth-card { padding: 28px 20px; } }
 @media (max-width: 920px) { .sidebar { width: 220px; flex-basis: 220px; } .stats-grid { grid-template-columns: repeat(2, 1fr); } .dashboard-grid, .list-detail, .profile-layout { grid-template-columns: 1fr; } .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 680px) { .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; transform: translateX(-100%); transition: transform .25s; width: min(290px, 84vw); } .sidebar.open { transform: translateX(0); } .mobile-close { display: block; position: absolute; top: 20px; right: 15px; border: 0; background: transparent; color: white; font-size: 26px; } .menu-toggle { display: block; font-size: 22px; margin-right: 15px; } .topbar { padding: 16px 20px; } .breadcrumb-root, .breadcrumb-separator { display: none; } .breadcrumb { flex: 1; } .profile-chip-copy { display: none; } .view-root { padding: 28px 18px 40px; } .hero, .section-title { display: block; } .hero-actions { margin-top: 20px; } .stats-grid, .cards-grid { grid-template-columns: 1fr; } .stat-card { padding: 16px; } .recipe-image { height: 140px; } }

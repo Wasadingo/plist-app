@@ -18,6 +18,10 @@ PList usa Supabase como backend inicial sin depender de Google para el registro.
 5. Configura SMTP en Authentication > SMTP Settings. Para pruebas puede usarse el correo integrado de Supabase, pero solo envía a miembros del equipo y tiene un límite aproximado de 2 mensajes por hora. Para acceso público, usa la opción Brevo descrita más abajo.
 6. Despliega las Edge Functions desde la carpeta `supabase/functions` cuando el CLI de Supabase esté disponible.
 
+## Después de ejecutar el esquema principal
+
+Ejecuta también `migrations/002_profile_trigger.sql`. Crea automáticamente el perfil visible al registrarse, sin exponer el email en la aplicación.
+
 ## Correo gratuito para usuarios reales
 
 Opción recomendada: Brevo Free. Crea una cuenta, verifica el remitente o dominio y copia el host SMTP, puerto, usuario y contraseña SMTP en Supabase > Authentication > SMTP Settings. El plan gratuito indica 300 mensajes diarios y no requiere tarjeta, pero sigue sujeto a sus políticas y límites.
