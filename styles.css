@@ -115,7 +115,7 @@ h3 { color: var(--navy); font-size: 17px; }
 .list-card p { margin: 0; font-size: 12px; color: var(--muted); }
 .list-meta { display: flex; gap: 14px; color: var(--muted); font-size: 11px; }
 .list-meta strong { color: var(--navy); }
-.card-actions { display: flex; justify-content: space-between; align-items: center; }
+.card-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
 .kebab { border: 0; background: transparent; color: var(--muted); font-size: 20px; }
 .recipe-card { overflow: hidden; }
 .recipe-image { height: 160px; display: grid; place-items: center; font-size: 52px; background: linear-gradient(135deg, #e8f2e7, #f8dc9f); }
