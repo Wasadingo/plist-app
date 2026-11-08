@@ -45,10 +45,15 @@ button { cursor: pointer; }
 .icon-button { position: relative; font-size: 22px; padding: 7px; }
 .notification-icon { width: 23px; height: 23px; display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .notification-badge { position: absolute; right: 1px; top: 1px; min-width: 16px; height: 16px; padding: 1px 4px; background: var(--red); color: #fff; border-radius: 20px; font-size: 9px; font-weight: 700; }
+.profile-menu-wrap { position: relative; }
 .profile-chip { display: flex; gap: 9px; align-items: center; text-align: left; }
 .avatar { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; background: #e8c08e; color: #6e4c2b; font-weight: 700; font-size: 12px; }
 .profile-chip-copy { display: grid; gap: 2px; font-size: 12px; }
 .profile-chip-copy small { color: var(--muted); font-size: 10px; }
+.profile-menu { position: absolute; z-index: 8; right: 0; top: calc(100% + 10px); width: 170px; padding: 7px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 32px rgba(18,48,74,.14); }
+.profile-menu button { display: block; width: 100%; border: 0; border-radius: 8px; padding: 10px 11px; background: transparent; color: var(--navy); text-align: left; font-size: 13px; }
+.profile-menu button:hover { background: var(--green-soft); }
+.profile-menu button:last-child { color: #a54c45; }
 .menu-toggle, .mobile-close { display: none; }
 .view-root { max-width: 1280px; margin: 0 auto; padding: clamp(26px, 5vw, 64px); }
 .eyebrow { color: var(--green); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .13em; margin: 0 0 10px; }
