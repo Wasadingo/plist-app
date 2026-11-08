@@ -1,6 +1,7 @@
 const state = {
   view: 'home',
   mode: 'normal',
+  user: { displayName: 'Alex López', nickname: 'alexcocina' },
   listsTab: 'personal',
   selectedList: 0,
   lists: [
@@ -19,6 +20,8 @@ const viewNames = { home: 'Inicio', lists: 'Mis listas de compra', 'my-recipes':
 const root = document.getElementById('view-root');
 const toast = document.getElementById('toast');
 let ready = false;
+function userName() { return state.user?.displayName || 'PList'; }
+function userInitials() { return userName().split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'PL'; }
 function persist() {
   if (!ready) return;
   PListDB.save({ lists: state.lists, recipes: state.recipes, listsTab: state.listsTab }).catch(() => showToast('No se pudo guardar en este dispositivo'));
@@ -28,8 +31,12 @@ function render() {
   root.innerHTML = views[state.view]();
   document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
   document.getElementById('breadcrumb-root').textContent = viewNames[state.view];
-  document.getElementById('breadcrumb-current').textContent = state.view === 'home' ? 'Buenos días, Alex' : viewNames[state.view];
+  document.getElementById('breadcrumb-current').textContent = state.view === 'home' ? `Buenos días, ${userName().split(/\s+/)[0]}` : viewNames[state.view];
   document.getElementById('mode-label').textContent = state.mode === 'admin' ? 'Perfil administrador' : 'Perfil normal';
+  const topName = document.querySelector('.profile-chip strong');
+  const topAvatar = document.querySelector('.profile-chip .avatar');
+  if (topName) topName.textContent = userName();
+  if (topAvatar) topAvatar.textContent = userInitials();
   bindEvents();
 }
 
@@ -40,7 +47,7 @@ const views = {
   lists: () => { const visible = state.lists.filter(l => l.type === state.listsTab); return `<div class="section-title"><div><p class="eyebrow">Organización</p><h2>Mis listas de compra</h2><p>Planifica tu compra sin perder de vista lo importante.</p></div><button class="button button-primary" data-action="new-list">+ Nueva lista</button></div><div class="tabs"><button class="tab ${state.listsTab === 'personal' ? 'active' : ''}" data-tab="personal">Listas personales</button><button class="tab ${state.listsTab === 'shared' ? 'active' : ''}" data-tab="shared">Listas compartidas</button></div><div class="cards-grid">${visible.map((list, i) => `<article class="list-card"><div class="list-card-top"><div><h3>${list.name}</h3><p>${list.type === 'shared' ? `Compartida con ${list.members} personas` : 'Solo tú'}</p></div><button class="kebab" data-action="list-menu" data-index="${state.lists.indexOf(list)}">···</button></div><div class="list-meta"><span><strong>${list.items.length}</strong> productos</span><span><strong>${list.items.filter(i => !i.done).length}</strong> pendientes</span></div><div class="card-actions"><span class="eyebrow" style="margin:0">${list.updated}</span><button class="button button-light" data-action="open-list" data-index="${state.lists.indexOf(list)}">Abrir lista</button></div></article>`).join('') || `<div class="panel empty-state"><div class="empty-state-icon">🧺</div><h3>Aún no tienes listas aquí</h3><p>Crea una lista para empezar a organizar tu compra.</p></div>`}</div>`; },
   'my-recipes': () => `<div class="section-title"><div><p class="eyebrow">Tu cocina</p><h2>Mis recetas</h2><p>Crea tus propias recetas y guarda tus ideas para otro día.</p></div><button class="button button-primary" data-action="new-recipe">+ Nueva receta</button></div><div class="cards-grid">${state.recipes.slice(0,2).map(recipeCard).join('')}<div class="panel empty-state"><div class="empty-state-icon">✎</div><h3>¿Tienes una idea?</h3><p>Guarda una receta para volver a ella cuando quieras.</p><button class="button button-light" data-action="new-recipe">Crear receta</button></div></div>`,
   recipes: () => `<div class="section-title"><div><p class="eyebrow">Comunidad PList</p><h2>Recetas para inspirarte</h2><p>Ideas frescas de personas a las que les gusta cocinar.</p></div><button class="button button-light" data-action="show-toast">Filtrar recetas</button></div><div class="cards-grid">${state.recipes.map(recipeCard).join('')}</div>`,
-  profile: () => `<div class="section-title"><div><p class="eyebrow">Cuenta</p><h2>Perfil y configuración</h2><p>Controla tu experiencia y tus preferencias.</p></div></div>${state.mode === 'admin' ? '<div class="admin-banner"><span><strong>Modo administrador activo.</strong> Las acciones globales quedan registradas.</span><button class="button button-light" data-action="normal-mode">Volver al perfil normal</button></div>' : ''}<div class="profile-layout"><section class="panel profile-card"><div class="profile-avatar-large">AL</div><h2>Alex López</h2><p>@alexcocina</p><div class="profile-stats"><div><strong>12</strong><span>Recetas</span></div><div><strong>4</strong><span>Listas</span></div><div><strong>86</strong><span>Favoritos</span></div></div></section><section class="panel"><div class="panel-header"><h2>Preferencias</h2></div><div class="setting-row"><div class="setting-copy"><strong>Notificaciones</strong><span>Recibe avisos sobre listas, recetas e invitaciones.</span></div><button class="switch on" data-action="toggle-switch" aria-label="Cambiar notificaciones"></button></div><div class="setting-row"><div class="setting-copy"><strong>Apariencia</strong><span>Elige cómo quieres ver PList.</span></div><select style="width:130px" class="field input"><option>Claro</option><option>Oscuro</option></select></div><div class="setting-row"><div class="setting-copy"><strong>Idioma</strong><span>Español es el idioma de tu interfaz.</span></div><select style="width:130px" class="field input"><option>Español</option><option>English</option></select></div><div class="setting-row"><div class="setting-copy"><strong>Cambiar de perfil</strong><span>${state.mode === 'admin' ? 'Gestiona el contenido y la configuración global.' : 'Accede al modo administrador de la cuenta propietaria.'}</span></div><button class="button ${state.mode === 'admin' ? 'button-light' : 'button-dark'}" data-action="${state.mode === 'admin' ? 'normal-mode' : 'admin-mode'}">${state.mode === 'admin' ? 'Perfil normal' : 'Cambiar de perfil'}</button></div><div class="setting-row"><div class="setting-copy"><strong>Seguridad</strong><span>Contraseña, sesiones y recuperación de PIN.</span></div><button class="button button-light" data-action="show-toast">Gestionar</button></div></section></div>`
+  profile: () => `<div class="section-title"><div><p class="eyebrow">Cuenta</p><h2>Perfil y configuración</h2><p>Controla tu experiencia y tus preferencias.</p></div></div>${state.mode === 'admin' ? '<div class="admin-banner"><span><strong>Modo administrador activo.</strong> Las acciones globales quedan registradas.</span><button class="button button-light" data-action="normal-mode">Volver al perfil normal</button></div>' : ''}<div class="profile-layout"><section class="panel profile-card"><div class="profile-avatar-large">${userInitials()}</div><h2>${userName()}</h2><p>@${state.user?.nickname || 'usuario'}</p><div class="profile-stats"><div><strong>${state.recipes.length}</strong><span>Recetas</span></div><div><strong>${state.lists.length}</strong><span>Listas</span></div><div><strong>${state.recipes.filter(r => r.favorite).length}</strong><span>Favoritos</span></div></div></section><section class="panel"><div class="panel-header"><h2>Preferencias</h2></div><div class="setting-row"><div class="setting-copy"><strong>Notificaciones</strong><span>Recibe avisos sobre listas, recetas e invitaciones.</span></div><button class="switch on" data-action="toggle-switch" aria-label="Cambiar notificaciones"></button></div><div class="setting-row"><div class="setting-copy"><strong>Apariencia</strong><span>Elige cómo quieres ver PList.</span></div><select style="width:130px" class="field input"><option>Claro</option><option>Oscuro</option></select></div><div class="setting-row"><div class="setting-copy"><strong>Idioma</strong><span>Español es el idioma de tu interfaz.</span></div><select style="width:130px" class="field input"><option>Español</option><option>English</option></select></div><div class="setting-row"><div class="setting-copy"><strong>Cambiar de perfil</strong><span>${state.mode === 'admin' ? 'Gestiona el contenido y la configuración global.' : 'Accede al modo administrador de la cuenta propietaria.'}</span></div><button class="button ${state.mode === 'admin' ? 'button-light' : 'button-dark'}" data-action="${state.mode === 'admin' ? 'normal-mode' : 'admin-mode'}">${state.mode === 'admin' ? 'Perfil normal' : 'Cambiar de perfil'}</button></div><div class="setting-row"><div class="setting-copy"><strong>Seguridad</strong><span>Contraseña, sesiones y recuperación de PIN.</span></div><button class="button button-light" data-action="show-toast">Gestionar</button></div></section></div>`
 };
 
 function recipeCard(recipe) { return `<article class="recipe-card"><div class="recipe-image ${recipe.tone}">${recipe.emoji}</div><div class="recipe-body"><h3>${recipe.title}</h3><p>${recipe.description}</p><div class="recipe-footer"><span>${recipe.author} · ${recipe.time}</span><span class="rating">★ ${recipe.rating}</span></div><button class="button ${recipe.favorite ? 'button-light' : 'button-quiet'}" data-action="favorite" data-title="${recipe.title}">${recipe.favorite ? '♥ Guardada en favoritos' : '♡ Guardar en favoritos'}</button></div></article>`; }
@@ -75,6 +82,17 @@ async function start() {
     if (saved?.lists) state.lists = saved.lists;
     if (saved?.recipes) state.recipes = saved.recipes;
     if (saved?.listsTab) state.listsTab = saved.listsTab;
+    if (window.PListBackend?.enabled) {
+      const sessionResult = await PListBackend.session();
+      const session = sessionResult.data?.session;
+      if (session) {
+        const profileResult = await PListBackend.client.from('profiles').select('display_name,nickname').eq('id', session.user.id).maybeSingle();
+        const profile = profileResult.data;
+        state.user = { displayName: profile?.display_name || session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'PList', nickname: profile?.nickname || session.user.user_metadata?.nickname || 'usuario' };
+        state.lists = [];
+        state.recipes = [];
+      }
+    }
     ready = true;
   } catch (error) { console.warn('PList se ejecuta sin persistencia local', error); }
   render();
