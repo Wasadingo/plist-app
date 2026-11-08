@@ -77,6 +77,10 @@ function handleAction(action, el) {
 function renderListDetail() { const list = state.lists[state.selectedList]; root.innerHTML = `<div class="section-title"><div><p class="eyebrow">${list.type === 'shared' ? 'Lista compartida' : 'Lista personal'}</p><h2>${list.name}</h2><p>${list.items.length} productos · ${list.items.filter(i => !i.done).length} pendientes</p></div><div class="hero-actions"><button class="button button-light" data-view="lists">Volver a listas</button><button class="button button-primary" data-action="add-item">+ Añadir producto</button></div></div><div class="list-detail"><section class="panel"><div class="panel-header"><h3>Productos</h3><span class="eyebrow" style="margin:0">${list.items.filter(i => i.done).length}/${list.items.length} comprados</span></div><div class="shopping-list">${list.items.map((item, i) => `<div class="shopping-row ${item.done ? 'done' : ''}"><input type="checkbox" ${item.done ? 'checked' : ''} data-item="${i}"><span class="item-name">${item.name}</span><span class="quantity">${item.qty}</span><button class="delete-item" data-action="delete-item" data-item="${i}" aria-label="Eliminar ${item.name}">×</button></div>`).join('') || '<div class="empty-state"><div class="empty-state-icon">🛒</div><p>Añade el primer producto a esta lista.</p></div>'}</div></section><section class="panel"><div class="panel-header"><h3>Resumen</h3></div><div class="progress-wrap"><div class="progress-meta"><span>Progreso de compra</span><strong>${list.items.length ? Math.round(list.items.filter(i => i.done).length / list.items.length * 100) : 0}%</strong></div><div class="progress-track"><div class="progress-bar" style="width:${list.items.length ? list.items.filter(i => i.done).length / list.items.length * 100 : 0}%"></div></div><p class="lead" style="font-size:12px">Los productos comprados permanecen en la lista para que puedas consultarlos después.</p></div></section></div>`; bindEvents(); }
 document.addEventListener('click', e => { if (e.target.dataset.action === 'add-item') openModal('Añadir producto', `<div class="form-grid"><div class="field"><label for="item-name">Producto</label><input id="item-name" placeholder="Ej. Limones"></div><div class="field"><label for="item-qty">Cantidad</label><input id="item-qty" placeholder="Ej. 4 unidades"></div></div>`, () => { const name = document.getElementById('item-name').value.trim(); if (!name) return showToast('Escribe un producto'); state.lists[state.selectedList].items.push({ name, qty: document.getElementById('item-qty').value.trim() || '1 unidad', done: false }); persist(); document.getElementById('modal-root').innerHTML = ''; renderListDetail(); showToast('Producto añadido'); }); if (e.target.dataset.action === 'delete-item') { state.lists[state.selectedList].items.splice(Number(e.target.dataset.item), 1); persist(); renderListDetail(); showToast('Producto eliminado'); } });
 async function start() {
+  if (!window.PListBackend?.enabled) {
+    root.innerHTML = '<section class="panel empty-state"><div class="empty-state-icon">⚠</div><h2>No se ha podido conectar con PList</h2><p>La aplicación no va a mostrar datos de demostración porque el backend no está disponible. Recarga la página o inténtalo de nuevo más tarde.</p><button class="button button-primary" onclick="location.reload()">Reintentar conexión</button></section>';
+    return;
+  }
   try {
     const saved = await PListDB.load();
     if (saved?.lists) state.lists = saved.lists;
@@ -91,6 +95,8 @@ async function start() {
         state.user = { displayName: profile?.display_name || session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'PList', nickname: profile?.nickname || session.user.user_metadata?.nickname || 'usuario' };
         state.lists = [];
         state.recipes = [];
+      } else {
+        return;
       }
     }
     ready = true;
