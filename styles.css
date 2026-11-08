@@ -51,9 +51,15 @@ button { cursor: pointer; }
 .profile-chip-copy { display: grid; gap: 2px; font-size: 12px; }
 .profile-chip-copy small { color: var(--muted); font-size: 10px; }
 .profile-menu { position: absolute; z-index: 8; right: 0; top: calc(100% + 10px); width: 170px; padding: 7px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 32px rgba(18,48,74,.14); }
+.profile-menu { display: none; }
+.profile-menu.open { display: block; }
 .profile-menu button { display: block; width: 100%; border: 0; border-radius: 8px; padding: 10px 11px; background: transparent; color: var(--navy); text-align: left; font-size: 13px; }
 .profile-menu button:hover { background: var(--green-soft); }
 .profile-menu button:last-child { color: #a54c45; }
+.notification-menu-wrap { position: relative; }
+.notification-menu { display: none; position: absolute; z-index: 8; right: -8px; top: calc(100% + 10px); width: 245px; padding: 15px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 32px rgba(18,48,74,.14); }
+.notification-menu.open { display: block; }
+.notification-empty { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .menu-toggle, .mobile-close { display: none; }
 .view-root { max-width: 1280px; margin: 0 auto; padding: clamp(26px, 5vw, 64px); }
 .eyebrow { color: var(--green); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .13em; margin: 0 0 10px; }
