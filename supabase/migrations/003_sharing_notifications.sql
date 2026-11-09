@@ -155,3 +155,24 @@ revoke all on function public.create_list_invitation(uuid, text) from public;
 grant execute on function public.create_list_invitation(uuid, text) to authenticated;
 revoke all on function public.respond_list_invitation(uuid, text) from public;
 grant execute on function public.respond_list_invitation(uuid, text) to authenticated;
+
+-- Un colaborador puede marcar cualquier producto como comprado, pero solo
+-- puede editar o eliminar los productos que él mismo haya creado.
+drop policy if exists items_member_access on public.shopping_items;
+drop policy if exists items_member_read on public.shopping_items;
+drop policy if exists items_member_insert on public.shopping_items;
+drop policy if exists items_owner_or_author_update on public.shopping_items;
+drop policy if exists items_owner_or_author_delete on public.shopping_items;
+
+create policy items_member_read on public.shopping_items
+  for select using (public.is_list_member(list_id));
+
+create policy items_member_insert on public.shopping_items
+  for insert with check (public.is_list_member(list_id) and created_by = auth.uid());
+
+create policy items_owner_or_author_update on public.shopping_items
+  for update using (public.is_list_member(list_id) and (public.is_list_owner(list_id) or created_by = auth.uid()))
+  with check (public.is_list_member(list_id) and (public.is_list_owner(list_id) or created_by = auth.uid()));
+
+create policy items_owner_or_author_delete on public.shopping_items
+  for delete using (public.is_list_member(list_id) and (public.is_list_owner(list_id) or created_by = auth.uid()));
