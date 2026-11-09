@@ -25,6 +25,11 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     respondToInvitation: (invitationId, decision) => client.rpc('respond_list_invitation', { target_invitation: invitationId, decision }),
     notifications: () => client.from('notifications').select('*').is('read_at', null).order('created_at', { ascending: false }),
     markNotificationRead: (id) => client.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id),
+    adminStatus: () => client.rpc('admin_status'),
+    setAdminPin: (pin) => client.rpc('set_admin_pin', { new_pin: pin }),
+    verifyAdminPin: (pin) => client.rpc('verify_admin_pin', { candidate_pin: pin }),
+    adminDeleteRecipe: (sessionId, recipeId) => client.rpc('admin_delete_recipe', { target_session: sessionId, target_recipe: recipeId }),
+    adminDeleteComment: (sessionId, commentId) => client.rpc('admin_delete_comment', { target_session: sessionId, target_comment: commentId }),
     invitations: () => client.from('list_invitations').select('id,list_id,inviter_id,invitee_id,status,created_at,shopping_lists(name)').eq('status', 'pending'),
   };
   document.documentElement.dataset.backend = 'supabase';

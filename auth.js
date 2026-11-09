@@ -1,6 +1,7 @@
 (() => {
   const root = document.getElementById('view-root');
   let mode = 'signin';
+  const escapeHtml = value => String(value || '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
   const copy = {
     signin: { title: 'Bienvenido de nuevo', subtitle: 'Accede a tus listas y recetas.', button: 'Entrar' },
     signup: { title: 'Crea tu cuenta PList', subtitle: 'Organiza tu compra y descubre recetas frescas.', button: 'Crear cuenta' },
@@ -30,7 +31,12 @@
       message.insertAdjacentHTML('beforeend', '<br><button class="auth-inline-link" id="auth-resend">Reenviar correo de confirmación</button>');
       document.getElementById('auth-resend').addEventListener('click', async () => {
         const resend = await PListBackend.resendSignup(email);
-        message.textContent = resend.error ? 'No se pudo reenviar el correo. Revisa la configuración SMTP.' : 'Solicitud enviada. Revisa también la carpeta de spam.';
+        if (resend.error) {
+          const detail = [resend.error.code, resend.error.status, resend.error.message].filter(Boolean).join(' · ');
+          message.innerHTML = `No se pudo reenviar el correo. Revisa la configuración SMTP.<br><small>${escapeHtml(detail)}</small>`;
+        } else {
+          message.textContent = 'Solicitud enviada. Revisa también la carpeta de spam.';
+        }
       });
       return;
     }
