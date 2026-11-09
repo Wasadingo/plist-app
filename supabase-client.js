@@ -16,6 +16,16 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     onAuthChange: (callback) => client.auth.onAuthStateChange(callback),
     listLists: () => client.from('shopping_lists').select('*, shopping_items(*)').order('updated_at', { ascending: false }),
     createList: (payload) => client.from('shopping_lists').insert(payload).select().single(),
+    updateList: (id, payload) => client.from('shopping_lists').update(payload).eq('id', id).select().single(),
+    deleteList: (id) => client.from('shopping_lists').delete().eq('id', id),
+    createItem: (payload) => client.from('shopping_items').insert(payload).select().single(),
+    updateItem: (id, payload) => client.from('shopping_items').update(payload).eq('id', id).select().single(),
+    deleteItem: (id) => client.from('shopping_items').delete().eq('id', id),
+    inviteToList: (listId, nickname) => client.rpc('create_list_invitation', { target_list: listId, target_nickname: nickname }),
+    respondToInvitation: (invitationId, decision) => client.rpc('respond_list_invitation', { target_invitation: invitationId, decision }),
+    notifications: () => client.from('notifications').select('*').is('read_at', null).order('created_at', { ascending: false }),
+    markNotificationRead: (id) => client.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id),
+    invitations: () => client.from('list_invitations').select('id,list_id,inviter_id,invitee_id,status,created_at,shopping_lists(name)').eq('status', 'pending'),
   };
   document.documentElement.dataset.backend = 'supabase';
   window.dispatchEvent(new CustomEvent('plist-backend-ready'));

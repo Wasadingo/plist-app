@@ -22,6 +22,8 @@ PList usa Supabase como backend inicial sin depender de Google para el registro.
 
 Ejecuta también `migrations/002_profile_trigger.sql`. Crea automáticamente el perfil visible al registrarse, sin exponer el email en la aplicación.
 
+Ejecuta después `migrations/003_sharing_notifications.sql`. Activa las invitaciones reales a listas, las notificaciones del destinatario y los roles de propietario y colaborador.
+
 ## Correo gratuito para usuarios reales
 
 Opción recomendada: Brevo Free. Crea una cuenta, verifica el remitente o dominio y copia el host SMTP, puerto, usuario y contraseña SMTP en Supabase > Authentication > SMTP Settings. El plan gratuito indica 300 mensajes diarios y no requiere tarjeta, pero sigue sujeto a sus políticas y límites.
