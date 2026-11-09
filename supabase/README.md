@@ -26,6 +26,8 @@ Ejecuta después `migrations/003_sharing_notifications.sql`. Activa las invitaci
 
 Para activar el segundo perfil de la cuenta propietaria, ejecuta también `migrations/004_admin_profile.sql`. La cuenta autorizada se añade mediante una consulta privada en Supabase; el PIN se configura desde la aplicación y se valida en Supabase.
 
+Para el formulario de feedback ejecuta `migrations/005_feedback.sql` y despliega `functions/send-feedback`. Configura como secretos `BREVO_API_KEY`, `FEEDBACK_RECIPIENT_EMAIL` y `FEEDBACK_SENDER_EMAIL`; no los incluyas en el frontend.
+
 ## Correo gratuito para usuarios reales
 
 Opción recomendada: Brevo Free. Crea una cuenta, verifica el remitente o dominio y copia el host SMTP, puerto, usuario y contraseña SMTP en Supabase > Authentication > SMTP Settings. El plan gratuito indica 300 mensajes diarios y no requiere tarjeta, pero sigue sujeto a sus políticas y límites.

@@ -30,6 +30,7 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     verifyAdminPin: (pin) => client.rpc('verify_admin_pin', { candidate_pin: pin }),
     adminDeleteRecipe: (sessionId, recipeId) => client.rpc('admin_delete_recipe', { target_session: sessionId, target_recipe: recipeId }),
     adminDeleteComment: (sessionId, commentId) => client.rpc('admin_delete_comment', { target_session: sessionId, target_comment: commentId }),
+    sendFeedback: (payload) => client.functions.invoke('send-feedback', { body: payload }),
     invitations: () => client.from('list_invitations').select('id,list_id,inviter_id,invitee_id,status,created_at,shopping_lists(name)').eq('status', 'pending'),
   };
   document.documentElement.dataset.backend = 'supabase';
