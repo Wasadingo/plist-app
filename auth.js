@@ -13,7 +13,7 @@
     root.innerHTML = `<section class="auth-shell"><div class="auth-card"><div class="auth-brand"><img src="assets/PList_logo_transparente.png" alt="PList"><span>Listas y Recetas frescas</span></div><p class="eyebrow">Cuenta PList</p><h1>${text.title}</h1><p class="lead">${text.subtitle}</p>${message ? `<div class="auth-message">${message}</div>` : ''}<form id="auth-form" class="form-grid">${mode === 'signup' ? '<div class="field"><label for="auth-name">Nombre visible</label><input id="auth-name" required maxlength="80" autocomplete="name" placeholder="Tu nombre"></div><div class="field"><label for="auth-nickname">Apodo público</label><input id="auth-nickname" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" autocomplete="username" placeholder="ej. alexcocina"></div>' : ''}<div class="field"><label for="auth-email">Email</label><input id="auth-email" type="email" required autocomplete="email" placeholder="tu@email.com"></div><div class="field"><label for="auth-password">Contraseña</label><input id="auth-password" type="password" required minlength="8" autocomplete="${mode === 'signin' ? 'current-password' : 'new-password'}" placeholder="Mínimo 8 caracteres"></div><button class="button button-primary" type="submit">${text.button}</button></form><button class="auth-switch" id="auth-switch">${mode === 'signin' ? '¿Aún no tienes cuenta? Crear cuenta' : 'Ya tengo una cuenta · Entrar'}</button>${mode === 'signin' ? '<button class="auth-link" id="auth-reset">He olvidado mi contraseña</button>' : ''}</div></section>`;
     document.getElementById('auth-form').addEventListener('submit', submitAuth);
     document.getElementById('auth-switch').addEventListener('click', () => { mode = mode === 'signin' ? 'signup' : 'signin'; renderAuth(); });
-    document.getElementById('auth-reset')?.addEventListener('click', resetPassword);
+    document.getElementById('auth-reset')?.addEventListener('click', event => { event.preventDefault(); resetPassword(); });
   }
 
   async function submitAuth(event) {
@@ -48,9 +48,20 @@
   async function resetPassword() {
     const email = document.getElementById('auth-email')?.value.trim();
     if (!email) return renderAuth('Escribe primero tu email para enviarte el enlace de recuperación.');
+    const resetButton = document.getElementById('auth-reset');
+    if (resetButton) { resetButton.disabled = true; resetButton.textContent = 'Enviando enlace…'; }
     const result = await PListBackend.client.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}` });
-    renderAuth(result.error ? result.error.message : 'Te hemos enviado un enlace de recuperación si el email existe.');
+    if (result.error) renderAuth(result.error.message);
+    else renderAuth('Te hemos enviado un enlace de recuperación. Revisa tu correo y la carpeta de spam.');
   }
+
+  async function renderPasswordRecovery() {
+    document.querySelector('.app-shell')?.classList.add('auth-mode');
+    root.innerHTML = '<section class="auth-shell"><div class="auth-card"><div class="auth-brand"><img src="assets/PList_logo_transparente.png" alt="PList"><span>Listas y Recetas frescas</span></div><p class="eyebrow">Seguridad</p><h1>Establece una nueva contraseña</h1><p class="lead">Elige una contraseña nueva para volver a entrar en tu cuenta.</p><form id="recovery-form" class="form-grid"><div class="field"><label for="recovery-password">Nueva contraseña</label><input id="recovery-password" type="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres"></div><div class="field"><label for="recovery-confirm">Repetir contraseña</label><input id="recovery-confirm" type="password" required minlength="8" autocomplete="new-password" placeholder="Repite la contraseña"></div><button class="button button-primary" type="submit">Guardar contraseña</button></form></div></section>';
+    document.getElementById('recovery-form').addEventListener('submit', async event => { event.preventDefault(); const password = document.getElementById('recovery-password').value; const confirmation = document.getElementById('recovery-confirm').value; if (password !== confirmation) return renderPasswordRecoveryMessage('Las contraseñas no coinciden.'); const result = await PListBackend.client.auth.updateUser({ password }); if (result.error) return renderPasswordRecoveryMessage(result.error.message); renderAuth('Contraseña actualizada. Ya puedes iniciar sesión.'); });
+  }
+
+  function renderPasswordRecoveryMessage(message) { const form = document.getElementById('recovery-form'); if (!form) return; const notice = document.querySelector('.auth-message') || document.createElement('div'); notice.className = 'auth-message'; notice.textContent = message; form.parentElement.insertBefore(notice, form); }
 
   async function showWhenReady() {
     if (!window.PListBackend?.enabled) return;
@@ -59,4 +70,7 @@
   }
   window.addEventListener('plist-backend-ready', showWhenReady);
   setTimeout(showWhenReady, 0);
+  const watchRecovery = () => { if (window.PListBackend?.enabled) PListBackend.onAuthChange(event => { if (event === 'PASSWORD_RECOVERY') renderPasswordRecovery(); }); };
+  window.addEventListener('plist-backend-ready', watchRecovery);
+  setTimeout(watchRecovery, 0);
 })();
