@@ -23,7 +23,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select public.admin_account_allowed()
     and exists (select 1 from public.admin_security where owner_user_id = auth.uid());
@@ -33,7 +33,7 @@ create or replace function public.set_admin_pin(new_pin text)
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare salt text;
 begin
@@ -56,7 +56,7 @@ create or replace function public.verify_admin_pin(candidate_pin text)
 returns uuid
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare security_row public.admin_security%rowtype; session_id uuid;
 begin
