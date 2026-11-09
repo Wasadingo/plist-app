@@ -24,6 +24,8 @@ Ejecuta también `migrations/002_profile_trigger.sql`. Crea automáticamente el 
 
 Ejecuta después `migrations/003_sharing_notifications.sql`. Activa las invitaciones reales a listas, las notificaciones del destinatario y los roles de propietario y colaborador.
 
+Para activar el segundo perfil de la cuenta propietaria, ejecuta también `migrations/004_admin_profile.sql`. La cuenta autorizada se añade mediante una consulta privada en Supabase; el PIN se configura desde la aplicación y se valida en Supabase.
+
 ## Correo gratuito para usuarios reales
 
 Opción recomendada: Brevo Free. Crea una cuenta, verifica el remitente o dominio y copia el host SMTP, puerto, usuario y contraseña SMTP en Supabase > Authentication > SMTP Settings. El plan gratuito indica 300 mensajes diarios y no requiere tarjeta, pero sigue sujeto a sus políticas y límites.
