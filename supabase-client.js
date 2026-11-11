@@ -30,7 +30,7 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     verifyAdminPin: (pin) => client.rpc('verify_admin_pin', { candidate_pin: pin }),
     adminDeleteRecipe: (sessionId, recipeId) => client.rpc('admin_delete_recipe', { target_session: sessionId, target_recipe: recipeId }),
     adminDeleteComment: (sessionId, commentId) => client.rpc('admin_delete_comment', { target_session: sessionId, target_comment: commentId }),
-    sendFeedback: async (payload) => { const result = await client.functions.invoke('send-feedback', { body: payload }); if (result.error?.context instanceof Response) { try { const details = await result.error.context.json(); return { data: details, error: new Error(details.error || result.error.message) }; } catch (_) {} } return result; },
+    sendFeedback: async (payload) => { const result = await client.functions.invoke('send-feedback', { body: payload }); const context = result.error?.context; if (context && typeof context.json === 'function') { try { const details = await context.json(); return { data: details, error: new Error(details.error || result.error.message) }; } catch (_) {} } return result; },
     invitations: () => client.from('list_invitations').select('id,list_id,inviter_id,invitee_id,status,created_at,shopping_lists(name)').eq('status', 'pending'),
   };
   document.documentElement.dataset.backend = 'supabase';
