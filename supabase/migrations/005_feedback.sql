@@ -12,8 +12,10 @@ create table if not exists public.feedback (
 
 alter table public.feedback enable row level security;
 
+drop policy if exists feedback_self_insert on public.feedback;
 create policy feedback_self_insert on public.feedback
   for insert with check (user_id = auth.uid());
 
+drop policy if exists feedback_self_read on public.feedback;
 create policy feedback_self_read on public.feedback
   for select using (user_id = auth.uid());
