@@ -9,12 +9,14 @@ Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const publishableKeys = JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS') || '{}');
+    const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') || '{}');
+    const anonKey = publishableKeys.default || Deno.env.get('SUPABASE_ANON_KEY');
+    const serviceRoleKey = secretKeys.default || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const brevoKey = Deno.env.get('BREVO_API_KEY');
     const recipient = Deno.env.get('FEEDBACK_RECIPIENT_EMAIL');
     const sender = Deno.env.get('FEEDBACK_SENDER_EMAIL');
-    if (!brevoKey || !recipient || !sender) throw new Error('Faltan secretos de feedback');
+    if (!supabaseUrl || !anonKey || !serviceRoleKey || !brevoKey || !recipient || !sender) throw new Error('Faltan secretos o claves de feedback en la Edge Function');
 
     const authClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: request.headers.get('Authorization') || '' } } });
     const { data: { user }, error: userError } = await authClient.auth.getUser();
@@ -38,6 +40,7 @@ Deno.serve(async (request) => {
     if (!emailResponse.ok) throw new Error(`Brevo respondió con ${emailResponse.status}`);
     return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (error) {
+    console.error('send-feedback failed', error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'No se pudo enviar el feedback' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 });
