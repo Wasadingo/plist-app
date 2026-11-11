@@ -1,6 +1,6 @@
 const CACHE = 'plist-shell-v5';
 const ASSETS = ['./', './index.html', './styles.css', './db.js', './supabase-config.public.js', './supabase-client.js', './auth.js', './app.js', './manifest.webmanifest', './assets/PList_logo_transparente.png', './assets/PList_logo_fondo_claro.png'];
-self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
+self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('plist-shell-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
