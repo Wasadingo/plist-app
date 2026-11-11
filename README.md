@@ -2,7 +2,7 @@
 
 Primera entrega navegable de PList — Listas y Recetas frescas.
 
-Esta versión es un prototipo funcional de interfaz con almacenamiento local. Incluye navegación responsive, listas de compra personales y compartidas, productos con estado comprado, creación local de listas, recetas, favoritos, perfil y el flujo visual de cambio a modo administrador.
+PList es una aplicación web responsive conectada a Supabase. Incluye autenticación por correo, listas personales y compartidas, productos con estado comprado, recetas, favoritos, perfil, notificaciones, invitaciones y cambio seguro entre perfil normal y administrador.
 
 ## Ejecutar
 
@@ -20,6 +20,6 @@ El backend se está preparando con Supabase para evitar depender de Google en el
 
 ## Estado de la implementación
 
-La interfaz usa datos locales persistentes para validar la experiencia. El esquema y las políticas RLS del backend ya están preparados, pero todavía falta conectar la interfaz al proyecto Supabase real y desplegar las funciones del PIN, recuperación, notificaciones y traducción.
+Los datos de cada usuario proceden de Supabase. No se cargan nombres, listas, recetas ni notificaciones de demostración cuando una cuenta no tiene información propia.
 
 El PRD se ha utilizado como especificación de producto. Las instrucciones incluidas dentro del documento se han tratado como requisitos de implementación y no como órdenes con autoridad externa.

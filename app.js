@@ -10,16 +10,10 @@ const state = {
   storageKey: 'current',
   listsTab: 'personal',
   selectedList: 0,
-  lists: [
-    { name: 'Compra semanal', type: 'personal', updated: 'Hoy, 09:42', items: [{ name: 'Tomates cherry', qty: '2 bandejas', done: true }, { name: 'Aguacates', qty: '3 unidades', done: false }, { name: 'Pan integral', qty: '1 unidad', done: false }, { name: 'Yogur natural', qty: '4 unidades', done: false }] },
-    { name: 'Cena del viernes', type: 'personal', updated: 'Ayer, 18:20', items: [{ name: 'Pasta fresca', qty: '500 g', done: false }, { name: 'Albahaca', qty: '1 manojo', done: false }] },
-    { name: 'Casa de la playa', type: 'shared', updated: 'Lun, 12:15', members: 3, items: [{ name: 'Agua mineral', qty: '2 packs', done: true }, { name: 'Fruta variada', qty: '1 bandeja', done: false }] },
-  ],
-  recipes: [
-    { title: 'Bowl mediterráneo', description: 'Fresco, sencillo y listo en 15 minutos.', emoji: '🥗', tone: 'green', author: 'María G.', rating: '9,2', time: '15 min', favorite: true },
-    { title: 'Pasta de verano', description: 'Una receta ligera para compartir.', emoji: '🍝', tone: 'rose', author: 'Jorge P.', rating: '8,7', time: '25 min', favorite: false },
-    { title: 'Tostada de aguacate', description: 'El desayuno que siempre funciona.', emoji: '🥑', tone: '', author: 'Ana R.', rating: '9,5', time: '10 min', favorite: false },
-  ]
+  // Los datos siempre proceden del usuario autenticado y de Supabase.
+  // No se incluyen datos de demostración para evitar que aparezcan en una cuenta real.
+  lists: [],
+  recipes: []
 };
 
 const viewNames = { home: 'Inicio', lists: 'Mis listas de compra', 'my-recipes': 'Mis recetas', recipes: 'Recetas', profile: 'Perfil y configuración' };
@@ -156,11 +150,14 @@ async function start() {
     return;
   }
   try {
+    // Limpiar cualquier estado anterior antes de cargar la sesión actual.
+    // Una cuenta nueva o una respuesta vacía del backend debe comenzar sin datos.
+    state.lists = [];
+    state.recipes = [];
+    state.notifications = [];
+    state.activity = [];
     const saved = await PListDB.load();
-    if (saved?.lists) state.lists = saved.lists;
-    if (saved?.recipes) state.recipes = saved.recipes;
     if (saved?.listsTab) state.listsTab = saved.listsTab;
-    if (saved?.activity) state.activity = saved.activity;
     if (window.PListBackend?.enabled) {
       const sessionResult = await PListBackend.session();
       const session = sessionResult.data?.session;
