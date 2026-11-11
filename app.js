@@ -68,10 +68,43 @@ async function enableDeviceNotifications() {
   if (!('Notification' in window)) return showToast('Este dispositivo no permite avisos del navegador');
   const permission = await Notification.requestPermission();
   if (permission === 'granted') {
+    try {
+      await subscribePushDevice();
+    } catch (error) {
+      console.warn('No se pudo registrar este dispositivo para Web Push', error);
+      return showToast('No se pudo registrar este dispositivo para avisos');
+    }
     showToast('Avisos del dispositivo activados');
     render();
   } else {
     showToast('No se han activado los avisos del dispositivo');
+  }
+}
+
+function base64ToUint8Array(value) {
+  const padding = '='.repeat((4 - value.length % 4) % 4);
+  const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+  return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+}
+
+async function subscribePushDevice() {
+  const publicKey = window.SUPABASE_CONFIG?.vapidPublicKey;
+  if (!publicKey || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  const registration = await navigator.serviceWorker.ready;
+  let subscription = await registration.pushManager.getSubscription();
+  if (!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64ToUint8Array(publicKey) });
+  const json = subscription.toJSON();
+  const result = await PListBackend.savePushSubscription({ user_id: state.userId, endpoint: json.endpoint, p256dh: json.keys?.p256dh || '', auth: json.keys?.auth || '', user_agent: navigator.userAgent });
+  if (result.error) throw result.error;
+}
+
+async function removePushSubscriptionForCurrentDevice() {
+  if (!('serviceWorker' in navigator) || !PListBackend?.removePushSubscription) return;
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription();
+  if (subscription) {
+    await PListBackend.removePushSubscription(subscription.endpoint);
+    await subscription.unsubscribe();
   }
 }
 
@@ -164,7 +197,7 @@ function handleAction(action, el) {
   if (action === 'toggle-notifications') { const menu = document.querySelector('.notification-menu'); const profile = document.querySelector('.profile-menu'); const button = document.querySelector('.notification-button'); const isOpen = menu?.classList.contains('open'); profile?.classList.remove('open'); if (menu) menu.classList.toggle('open', !isOpen); button?.setAttribute('aria-expanded', String(!isOpen)); return; }
   if (action === 'enable-notifications') { enableDeviceNotifications(); return; }
   if (action === 'clear-notifications') { PListBackend.clearNotifications(state.userId).then(result => { if (result.error) return showToast('No se pudieron limpiar las notificaciones'); state.notifications = []; render(); showToast('Notificaciones limpiadas'); }); return; }
-  if (action === 'sign-out') { const menu = document.querySelector('.profile-menu'); if (menu) menu.hidden = true; PListBackend.signOut().finally(() => { location.reload(); }); return; }
+  if (action === 'sign-out') { const menu = document.querySelector('.profile-menu'); if (menu) menu.hidden = true; removePushSubscriptionForCurrentDevice().catch(() => {}).finally(() => PListBackend.signOut().finally(() => { location.reload(); })); return; }
   if (action === 'respond-invitation') { const button = el; button.disabled = true; PListBackend.respondToInvitation(el.dataset.id, el.dataset.decision).then(async result => { if (result.error) { button.disabled = false; return showToast(result.error.message); } if (el.dataset.notificationId) await PListBackend.markNotificationRead(el.dataset.notificationId); state.notifications = state.notifications.filter(item => item.id !== el.dataset.notificationId); showToast(el.dataset.decision === 'accepted' ? 'Invitación aceptada' : 'Invitación rechazada'); if (el.dataset.decision === 'accepted') location.reload(); else render(); }).catch(() => { button.disabled = false; showToast('No se pudo responder a la invitación'); }); return; }
   if (action === 'show-legal') { openModal('Ayuda y feedback', `<div class="help-copy"><p class="lead">PList protege tu cuenta mediante Supabase y separa los datos de cada usuario. Las listas compartidas solo están disponibles para las personas invitadas.</p><p class="lead">Si detectas un error, un contenido inapropiado o tienes una mejora, envíanos los detalles. Revisaremos cada mensaje.</p></div><div class="form-grid"><div class="field"><label for="feedback-email">Tu email</label><input id="feedback-email" type="email" required value="${state.user?.email || ''}" placeholder="tu@email.com"></div><div class="field"><label for="feedback-category">Tipo de mensaje</label><select id="feedback-category"><option value="suggestion">Sugerencia</option><option value="bug">Error o anomalía</option><option value="content">Contenido inapropiado</option><option value="other">Otro</option></select></div><div class="field"><label for="feedback-message">Mensaje</label><textarea id="feedback-message" minlength="10" maxlength="2000" required placeholder="Explícanos qué ha ocurrido o qué mejorarías"></textarea></div></div>`, async () => { const contactEmail = document.getElementById('feedback-email').value.trim(); const category = document.getElementById('feedback-category').value; const message = document.getElementById('feedback-message').value.trim(); if (!contactEmail || !contactEmail.includes('@')) return showToast('Escribe un email válido'); if (message.length < 10) return showToast('Escribe al menos 10 caracteres'); const result = await PListBackend.sendFeedback({ contactEmail, category, message }); if (result.error || result.data?.error) return showToast(result.error?.message || result.data.error); document.getElementById('modal-root').innerHTML = ''; showToast('Gracias. Hemos recibido tu mensaje'); }); return; }
   if (action === 'show-toast') showToast('Esta opción estará conectada al backend en la siguiente fase.');

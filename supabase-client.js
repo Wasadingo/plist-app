@@ -26,6 +26,8 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     notifications: () => client.from('notifications').select('*').is('read_at', null).order('created_at', { ascending: false }),
     markNotificationRead: (id) => client.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id),
     clearNotifications: userId => client.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', userId).is('read_at', null),
+    savePushSubscription: payload => client.from('push_subscriptions').upsert(payload, { onConflict: 'endpoint' }).select().single(),
+    removePushSubscription: endpoint => client.from('push_subscriptions').delete().eq('endpoint', endpoint),
     subscribeNotifications: (userId, callback) => client.channel(`user-notifications-${userId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, callback).subscribe(),
     removeChannel: channel => client.removeChannel(channel),
     adminStatus: () => client.rpc('admin_status'),
