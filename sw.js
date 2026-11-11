@@ -1,4 +1,4 @@
-const CACHE = 'plist-shell-v6';
+const CACHE = 'plist-shell-v7';
 const ASSETS = ['./', './index.html', './styles.css', './db.js', './supabase-config.public.js', './supabase-client.js', './auth.js', './app.js', './manifest.webmanifest', './assets/PList_logo_transparente.png', './assets/PList_logo_fondo_claro.png'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('plist-shell-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
@@ -27,10 +27,10 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const target = new URL(event.notification.data?.url || './', self.location.origin).href;
+  const target = new URL(event.notification.data?.url || './', self.registration.scope).href;
   event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(openWindows => {
     const existing = openWindows.find(windowClient => windowClient.url.startsWith(self.location.origin));
-    if (existing) return existing.focus();
+    if (existing) return existing.navigate(target).then(() => existing.focus());
     return clients.openWindow(target);
   }));
 });
