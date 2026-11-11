@@ -25,6 +25,8 @@ if (window.SUPABASE_CONFIG?.url && window.SUPABASE_CONFIG?.anonKey && window.sup
     respondToInvitation: (invitationId, decision) => client.rpc('respond_list_invitation', { target_invitation: invitationId, decision }),
     notifications: () => client.from('notifications').select('*').is('read_at', null).order('created_at', { ascending: false }),
     markNotificationRead: (id) => client.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id),
+    subscribeNotifications: (userId, callback) => client.channel(`user-notifications-${userId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, callback).subscribe(),
+    removeChannel: channel => client.removeChannel(channel),
     adminStatus: () => client.rpc('admin_status'),
     setAdminPin: (pin) => client.rpc('set_admin_pin', { new_pin: pin }),
     verifyAdminPin: (pin) => client.rpc('verify_admin_pin', { candidate_pin: pin }),

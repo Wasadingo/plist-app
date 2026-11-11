@@ -11,3 +11,26 @@ self.addEventListener('fetch', event => {
   }
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request)));
 });
+
+self.addEventListener('push', event => {
+  let data = { title: 'PList', body: 'Tienes una novedad en una lista compartida.', url: './' };
+  try {
+    if (event.data) data = { ...data, ...event.data.json() };
+  } catch (_) {}
+  event.waitUntil(self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: './assets/PList_logo_transparente.png',
+    badge: './assets/PList_logo_transparente.png',
+    data: { url: data.url || './' },
+  }));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || './', self.location.origin).href;
+  event.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(openWindows => {
+    const existing = openWindows.find(windowClient => windowClient.url.startsWith(self.location.origin));
+    if (existing) return existing.focus();
+    return clients.openWindow(target);
+  }));
+});
